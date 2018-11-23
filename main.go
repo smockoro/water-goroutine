@@ -1,26 +1,11 @@
 package main
 
-import (
-	"fmt"
-	"sync"
-	"time"
-)
-
-var wg sync.WaitGroup
+import "fmt"
 
 func main() {
 	c := make(chan string)
-	go count("sheep", c)
+	c <- "hello"
 
-	for msg := range c {
-		fmt.Println(msg)
-	}
-}
-
-func count(thing string, c chan string) {
-	for i := 0; i <= 5; i++ {
-		c <- thing
-		time.Sleep(time.Millisecond * 500)
-	}
-	close(c)
+	msg := <-c
+	fmt.Println(msg)
 }
