@@ -9,18 +9,18 @@ import (
 var wg sync.WaitGroup
 
 func main() {
-	wg.Add(1)
+	c := make(chan string)
+	go count("sheep", c)
 
-	go func() {
-		count("sheep")
-		wg.Done()
-	}()
-	wg.Wait()
+	for msg := range c {
+		fmt.Println(msg)
+	}
 }
 
-func count(thing string) {
+func count(thing string, c chan string) {
 	for i := 0; i <= 5; i++ {
-		fmt.Println(i, thing)
+		c <- thing
 		time.Sleep(time.Millisecond * 500)
 	}
+	close(c)
 }
