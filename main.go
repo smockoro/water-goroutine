@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func main() {
-	c := make(chan string)
+	c := make(chan string, 1)
 	c <- "hello"
 
 	msg := <-c
