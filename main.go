@@ -1,33 +1,28 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
+
+type Ball struct{ hits int }
 
 func main() {
-	jobs := make(chan int, 100)
-	results := make(chan int, 100)
+	table := make(chan *Ball)
+	go player("ping", table)
+	go player("pong", table)
 
-	go worker(jobs, results)
-
-	for i := 0; i < 100; i++ {
-		jobs <- i
-	}
-	close(jobs)
-
-	for j := 0; j < 100; j++ {
-		fmt.Println(<-results)
-	}
+	table <- new(Ball)
+	time.Sleep(1 * time.Second)
+	<-table
 }
 
-func worker(jobs <-chan int, results chan<- int) {
-	for n := range jobs {
-		results <- fib(n)
+func player(name string, table chan *Ball) {
+	for {
+		ball := <-table
+		ball.hits++
+		fmt.Println(name, ball.hits)
+		time.Sleep(100 * time.Millisecond)
+		table <- ball
 	}
-}
-
-func fib(n int) int {
-	if n <= 1 {
-		return n
-	}
-
-	return fib(n-1) + fib(n-2)
 }
